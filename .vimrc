@@ -16,7 +16,7 @@ Plugin 'vim-scripts/ZoomWin'
 Plugin 'rodjek/vim-puppet'
 Plugin 'bling/vim-airline'
 Plugin 'scrooloose/syntastic'
-Plugin 'airblade/vim-gitgutter'
+" Plugin 'airblade/vim-gitgutter'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'tpope/vim-fugitive'
 Plugin 'mbbill/undotree'
@@ -53,6 +53,11 @@ inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><C-y>  neocomplcache#close_popup()
 inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+
 set number
 syntax enable
 syn on
@@ -65,17 +70,17 @@ colorscheme molokai
 " set background=light
 " colorscheme lucius
 
-let g:gitgutter_enabled = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#hunks#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline_detect_modified=1
+" let g:gitgutter_enabled = 1
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#hunks#enabled = 1
+" let g:airline_powerline_fonts = 1
+" let g:airline_detect_modified=1
 
 
 " source /Library/Python/2.7/site-packages/powerline/bindings/vim/plugin/powerline.vim
 set laststatus=2
 set fillchars+=stl:\ ,stlnc:\
-set guifont=Inconsolata\ for\ Powerline:h15
+set guifont=Inconsolata-g\ for\ Powerline:h12
 " let g:Powerline_theme="short"
 " let g:Powerline_colorscheme="solarized256"
 " let g:Powerline_symbols = 'fancy'
@@ -88,6 +93,6 @@ set ttimeoutlen=50
 if has("gui_running")
    let s:uname = system("uname")
    if s:uname == "Darwin\n"
-      set guifont=Inconsolata\ for\ Powerline:h15
+      set guifont=Inconsolata-g\ for\ Powerline:h12
    endif
 endif

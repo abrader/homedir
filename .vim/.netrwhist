@@ -1,0 +1,3 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_1='/Users/abrader/Google Drive/Work/vagrant/gitlab/modules/gms/lib/puppet/provider/git_add_user_to_project'
