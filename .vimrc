@@ -1,14 +1,15 @@
-set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim/
-call vundle#rc()
+set nocompatible              " be iMproved, required
+filetype off                  " required
 
-Plugin 'gmarik/Vundle.vim'
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'scrooloose/nerdtree'
+" Plugin 'scrooloose/nerdtree'
 Plugin 'godlygeek/tabular'
-Plugin 'kien/ctrlp.vim'
+" Plugin 'kien/ctrlp.vim'
 Plugin 'Shougo/neocomplcache.vim'
 Plugin 'tpope/vim-surround'
 Plugin 'majutsushi/tagbar'
@@ -21,6 +22,7 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'tpope/vim-fugitive'
 Plugin 'mbbill/undotree'
 
+call vundle#end()
 filetype plugin indent on
 
 autocmd FileType puppet autocmd BufWritePre <buffer> :%s/\s\+$//e
