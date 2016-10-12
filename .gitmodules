@@ -1,3 +1,7 @@
 [submodule ".vim/bundle/ZoomWin"]
 	path = .vim/bundle/ZoomWin
 	url = https://github.com/vim-scripts/ZoomWin.git
+
+[submoudle ".vim/bundle/vim-gitgutter"]
+  path = .vim/bundle/vim-gitgutter
+  url = https://github.com/airblade/vim-gitgutter.git
