@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_eruby_ruby_checker')
+if exists("g:loaded_syntastic_eruby_ruby_checker")
     finish
 endif
 let g:loaded_syntastic_eruby_ruby_checker = 1
@@ -19,23 +19,23 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_eruby_ruby_IsAvailable() dict
-    if !exists('g:syntastic_eruby_ruby_exec') && exists('g:syntastic_ruby_exec')
-        let g:syntastic_eruby_ruby_exec = g:syntastic_ruby_exec
-        call self.log('g:syntastic_eruby_ruby_exec =', g:syntastic_eruby_ruby_exec)
+    if !exists("g:syntastic_ruby_exec")
+        let g:syntastic_ruby_exec = self.getExec()
     endif
-    return executable(self.getExec())
+    return executable(expand(g:syntastic_ruby_exec))
 endfunction
 
 function! SyntaxCheckers_eruby_ruby_GetLocList() dict
-    if !exists('s:ruby_new')
-        let s:ruby_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 9])
+    let exe = syntastic#util#shexpand(g:syntastic_ruby_exec)
+    if !syntastic#util#isRunningWindows()
+        let exe = 'RUBYOPT= ' . exe
     endif
 
-    let fname = "'" . escape(expand('%', 1), "\\'") . "'"
+    let fname = "'" . escape(expand('%'), "\\'") . "'"
 
     " TODO: encodings became useful in ruby 1.9 :)
-    if s:ruby_new
-        let enc = &fileencoding !=# '' ? &fileencoding : &encoding
+    if syntastic#util#versionIsAtLeast(syntastic#util#getVersion(exe . ' --version'), [1, 9])
+        let enc = &fileencoding != '' ? &fileencoding : &encoding
         let encoding_spec = ', :encoding => "' . (enc ==? 'utf-8' ? 'UTF-8' : 'BINARY') . '"'
     else
         let encoding_spec = ''
@@ -43,33 +43,23 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
 
     "gsub fixes issue #7, rails has it's own eruby syntax
     let makeprg =
-        \ self.getExecEscaped() . ' -rerb -e ' .
+        \ exe . ' -rerb -e ' .
         \ syntastic#util#shescape('puts ERB.new(File.read(' .
         \     fname . encoding_spec .
         \     ').gsub(''<%='',''<%''), nil, ''-'').src') .
-        \ ' | ' . self.getExecEscaped() . ' -w -c'
+        \ ' | ' . exe . ' -c'
 
-    let errorformat = '%-G%\m%.%#warning: %\%%(possibly %\)%\?useless use of a literal in void context,'
-
-    " filter out lines starting with ...
-    " long lines are truncated and wrapped in ... %p then returns the wrong
-    " column offset
-    let errorformat .= '%-G%\%.%\%.%\%.%.%#,'
-
-    let errorformat .=
+    let errorformat =
         \ '%-GSyntax OK,'.
         \ '%E-:%l: syntax error\, %m,%Z%p^,'.
         \ '%W-:%l: warning: %m,'.
         \ '%Z%p^,'.
         \ '%-C%.%#'
 
-    let env = syntastic#util#isRunningWindows() ? {} : { 'RUBYOPT': '' }
-
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'env': env,
-        \ 'defaults': { 'bufnr': bufnr(''), 'vcol': 1 } })
+        \ 'defaults': { 'bufnr': bufnr(""), 'vcol': 1 } })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -79,4 +69,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

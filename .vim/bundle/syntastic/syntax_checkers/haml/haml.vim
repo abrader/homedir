@@ -19,12 +19,16 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haml_haml_IsAvailable() dict
-    call syntastic#log#deprecationWarn('haml_interpreter', 'haml_haml_exec')
-    return executable(self.getExec())
+    if !exists('g:syntastic_haml_interpreter')
+        let g:syntastic_haml_interpreter = self.getExec()
+    endif
+    return executable(expand(g:syntastic_haml_interpreter))
 endfunction
 
 function! SyntaxCheckers_haml_haml_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-c' })
+    let makeprg = self.makeprgBuild({
+        \ 'exe': syntastic#util#shexpand(g:syntastic_haml_interpreter),
+        \ 'args_after': '-c' })
 
     let errorformat =
         \ 'Haml error on line %l: %m,' .
@@ -43,4 +47,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

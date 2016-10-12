@@ -1,7 +1,7 @@
 "============================================================================
-"File:        rubylint.vim
-"Description: Checks Ruby source code using ruby-lint
-"Maintainer:  Yorick Peterse <yorickpeterse@gmail.com>
+"File:        rust.vim
+"Description: Syntax checking plugin for syntastic.vim
+"Maintainer:  Chad Jablonski <chad.jablonski at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
 "             it and/or modify it under the terms of the Do What The Fuck You
@@ -10,19 +10,22 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_rubylint_checker")
+if exists("g:loaded_syntastic_rust_rustc_checker")
     finish
 endif
-
-let g:loaded_syntastic_ruby_rubylint_checker = 1
+let g:loaded_syntastic_rust_rustc_checker = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_ruby_rubylint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args': 'analyze --presenter=syntastic' })
+function! SyntaxCheckers_rust_rustc_GetLocList() dict
+    let makeprg = self.makeprgBuild({ 'args_after': '--no-trans' })
 
-    let errorformat = '%f:%t:%l:%c: %m'
+    let errorformat  =
+        \ '%E%f:%l:%c: %\d%#:%\d%# %.%\{-}error:%.%\{-} %m,'   .
+        \ '%W%f:%l:%c: %\d%#:%\d%# %.%\{-}warning:%.%\{-} %m,' .
+        \ '%C%f:%l %m,' .
+        \ '%-Z%.%#'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
@@ -30,9 +33,8 @@ function! SyntaxCheckers_ruby_rubylint_GetLocList() dict
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'ruby',
-    \ 'name': 'rubylint',
-    \ 'exec': 'ruby-lint'})
+    \ 'filetype': 'rust',
+    \ 'name': 'rustc'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

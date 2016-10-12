@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_co_coco_checker')
+if exists("g:loaded_syntastic_co_coco_checker")
     finish
 endif
 let g:loaded_syntastic_co_coco_checker = 1
@@ -19,8 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_co_coco_GetLocList() dict
-    let tmpdir = syntastic#util#tmpdir()
-    let makeprg = self.makeprgBuild({ 'args_after': '-c -o ' . tmpdir })
+    let makeprg = self.makeprgBuild({ 'args_after': '-c -o /tmp' })
 
     let errorformat =
         \ '%EFailed at: %f,' .
@@ -28,13 +27,9 @@ function! SyntaxCheckers_co_coco_GetLocList() dict
         \ '%EFailed at: %f,'.
         \ '%Z%trror: Parse error on line %l: %m'
 
-    let loclist = SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat })
-
-    call syntastic#util#rmrf(tmpdir)
-
-    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -44,4 +39,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

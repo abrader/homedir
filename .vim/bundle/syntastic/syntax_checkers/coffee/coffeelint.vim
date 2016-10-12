@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_coffee_coffeelint_checker')
+if exists("g:loaded_syntastic_coffee_coffeelint_checker")
     finish
 endif
 let g:loaded_syntastic_coffee_coffeelint_checker = 1
@@ -19,19 +19,19 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_coffee_coffeelint_GetLocList() dict
-    if !exists('s:coffeelint_new')
-        let s:coffeelint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 4])
-    endif
-    let makeprg = self.makeprgBuild({ 'args_after': (s:coffeelint_new ? '--reporter csv' : '--csv') })
+    let makeprg = self.makeprgBuild({ 'args_after': '--csv' })
 
-    let errorformat = '%f:%l:%t:%m'
+    let errorformat =
+        \ '%f\,%l\,%\d%#\,%trror\,%m,' .
+        \ '%f\,%l\,%trror\,%m,' .
+        \ '%f\,%l\,%\d%#\,%tarn\,%m,' .
+        \ '%f\,%l\,%tarn\,%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style',
-        \ 'returns': [0, 1],
-        \ 'preprocess': 'coffeelint' })
+        \ 'returns': [0, 1] })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -41,4 +41,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

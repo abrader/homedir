@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_vim_vimlint_checker')
+if exists("g:loaded_syntastic_vim_vimlint_checker")
     finish
 endif
 let g:loaded_syntastic_vim_vimlint_checker = 1
@@ -18,9 +18,9 @@ let g:loaded_syntastic_vim_vimlint_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item) " {{{1
+function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\m `\zs[^`]\+\ze`')
-    if term !=# ''
+    if term != ''
         let col = get(a:item, 'col', 0)
 
         if col && term[0:1] ==# 'l:'
@@ -29,21 +29,24 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item) " {{{1
             endif
         endif
 
-        return col ? '\%>' . (col - 1) . 'c\%<' . (col + strlen(term)) . 'c' : '\V' . escape(term, '\')
+        return '\V' . (col ? '\%' . col . 'c' : '') . escape(term, '\')
     endif
 
     return ''
-endfunction " }}}1
+endfunction
 
-function! SyntaxCheckers_vim_vimlint_IsAvailable() dict " {{{1
-    let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
-    let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
-    call self.log("globpath(&runtimepath, 'autoload/vimlparser.vim', 1) = " . string(vimlparser) . ', ' .
-                \ "globpath(&runtimepath, 'autoload/vimlint.vim', 1) = " .    string(vimlint))
-    return vimlparser !=# '' && vimlint !=# ''
-endfunction " }}}1
+function! SyntaxCheckers_vim_vimlint_IsAvailable() dict
+    let ret = 0
+    try
+        call vimlint#vimlint(syntastic#util#DevNull(), { 'output': [], 'quiet': 1 })
+        let ret = 1
+    catch /\m^Vim\%((\a\+)\)\=:E117/
+        " do nothing
+    endtry
+    return ret
+endfunction
 
-function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
+function! SyntaxCheckers_vim_vimlint_GetLocList() dict
     " EVL102: unused variable v
     " EVL103: unused argument v
     " EVL104: variable may not be initialized on some execution path: v
@@ -55,7 +58,7 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
     " value 3: the message is a warning
     "
     " References: :help vimlint-errorcode and :help vimlint-variables
-    let param = {
+    return vimlint#vimlint(expand('%'), {
         \ 'output': function('s:vimlintOutput'),
         \ 'quiet':  1,
         \ 'EVL102': 3,
@@ -65,25 +68,11 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
         \ 'EVL106': 3,
         \ 'EVL201': 3,
         \ 'EVL204': 3,
-        \ 'EVL205': 3 }
-
-    if exists('g:syntastic_vimlint_options') || exists('b:syntastic_vimlint_options')
-        let opts = syntastic#util#var('vimlint_options')
-        if type(opts) == type({})
-            let options = filter(copy(opts), 'v:key =~# "\\m^EVL"')
-            call extend(param, options, 'force')
-        endif
-    endif
-
-    call self.log('options =', param)
-
-    return vimlint#vimlint(expand('%', 1), param)
-endfunction " }}}1
-
-" Utilities {{{1
+        \ 'EVL205': 3 })
+endfunction
 
 " @vimlint(EVL103, 1, a:filename)
-function! s:vimlintOutput(filename, pos, ev, eid, mes, obj) " {{{2
+function! s:vimlintOutput(filename, pos, ev, eid, mes, obj)
     call add(a:obj.error, {
         \ 'bufnr': bufnr(''),
         \ 'lnum': a:pos.lnum,
@@ -92,16 +81,14 @@ function! s:vimlintOutput(filename, pos, ev, eid, mes, obj) " {{{2
         \ 'type': a:ev[0],
         \ 'text': '[' . a:eid . '] ' . a:mes,
         \ 'valid': a:pos.lnum > 0 })
-endfunction " }}}2
+endfunction
 " @vimlint(EVL103, 0, a:filename)
-
-" }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'vim',
-    \ 'name': 'vimlint' })
+    \ 'name': 'vimlint'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

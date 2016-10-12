@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_ruby_jruby_checker')
+if exists("g:loaded_syntastic_ruby_jruby_checker")
     finish
 endif
 let g:loaded_syntastic_ruby_jruby_checker = 1
@@ -19,9 +19,18 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_ruby_jruby_GetLocList() dict
+    if syntastic#util#isRunningWindows()
+        let exe = self.getExecEscaped()
+        let args = '-T1'
+    else
+        let exe = 'RUBYOPT= ' . self.getExecEscaped()
+        let args = ''
+    endif
+
     let makeprg = self.makeprgBuild({
-        \ 'args': (syntastic#util#isRunningWindows() ? '-T1 -W1' : '-W1'),
-        \ 'args_after': '-c' })
+        \ 'exe': exe,
+        \ 'args': args,
+        \ 'args_after': '-W1 -c' })
 
     let errorformat =
         \ '%-GSyntax OK for %f,'.
@@ -32,12 +41,9 @@ function! SyntaxCheckers_ruby_jruby_GetLocList() dict
         \ '%W%f:%l: %m,'.
         \ '%-C%.%#'
 
-    let env = syntastic#util#isRunningWindows() ? {} : { 'RUBYOPT': '' }
-
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat,
-        \ 'env': env })
+        \ 'errorformat': errorformat })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -47,4 +53,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

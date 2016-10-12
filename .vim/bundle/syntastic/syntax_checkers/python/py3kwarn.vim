@@ -5,7 +5,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_python_py3kwarn_checker')
+if exists("g:loaded_syntastic_python_py3kwarn_checker")
     finish
 endif
 let g:loaded_syntastic_python_py3kwarn_checker = 1
@@ -18,12 +18,9 @@ function! SyntaxCheckers_python_py3kwarn_GetLocList() dict
 
     let errorformat = '%W%f:%l:%c: %m'
 
-    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
-
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat,
-        \ 'env': env })
+        \ 'errorformat': errorformat })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -33,4 +30,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

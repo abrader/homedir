@@ -14,56 +14,28 @@ if exists('g:loaded_syntastic_javascript_eslint_checker')
 endif
 let g:loaded_syntastic_javascript_eslint_checker = 1
 
-if !exists('g:syntastic_javascript_eslint_sort')
-    let g:syntastic_javascript_eslint_sort = 1
-endif
-
-if !exists('g:syntastic_javascript_eslint_generic')
-    let g:syntastic_javascript_eslint_generic = 0
+if !exists('g:syntastic_javascript_eslint_conf')
+    let g:syntastic_javascript_eslint_conf = ''
 endif
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_javascript_eslint_IsAvailable() dict
-    if g:syntastic_javascript_eslint_generic
-        call self.log('generic eslint, exec =', self.getExec())
-    endif
-
-    if !executable(self.getExec())
-        return 0
-    endif
-    return g:syntastic_javascript_eslint_generic || syntastic#util#versionIsAtLeast(self.getVersion(), [0, 1])
-endfunction
-
 function! SyntaxCheckers_javascript_eslint_GetLocList() dict
-    if !g:syntastic_javascript_eslint_generic
-        call syntastic#log#deprecationWarn('javascript_eslint_conf', 'javascript_eslint_args',
-            \ "'--config ' . syntastic#util#shexpand(OLD_VAR)")
-    endif
-
-    let makeprg = self.makeprgBuild({ 'args_before': (g:syntastic_javascript_eslint_generic ? '' : '-f compact') })
+    let makeprg = self.makeprgBuild({
+        \ 'args': (g:syntastic_javascript_eslint_conf != '' ? '--config ' . g:syntastic_javascript_eslint_conf : '') })
 
     let errorformat =
-        \ '%E%f: line %l\, col %c\, Error - %m,' .
-        \ '%W%f: line %l\, col %c\, Warning - %m'
+        \ '%E%f: line %l\, col %c\, Error - %m'
 
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'postprocess': ['guards'] })
+        \ 'postprocess': ['sort'] })
 
-    if !g:syntastic_javascript_eslint_generic
-        if !exists('s:eslint_new')
-            let s:eslint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1])
-        endif
-
-        if !s:eslint_new
-            for e in loclist
-                let e['col'] += 1
-            endfor
-        endif
-    endif
+    for e in loclist
+        let e['col'] += 1
+    endfor
 
     return loclist
 endfunction
@@ -75,4 +47,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:

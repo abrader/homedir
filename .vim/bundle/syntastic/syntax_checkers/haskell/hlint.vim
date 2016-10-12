@@ -14,20 +14,16 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haskell_hlint_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'fname': syntastic#util#shexpand('%:p')})
+    let makeprg = self.makeprgBuild({})
 
     let errorformat =
-        \ '%E%f:%l:%v: Error while reading hint file\, %m,' .
-        \ '%E%f:%l:%v: Error: %m,' .
-        \ '%W%f:%l:%v: Warning: %m,' .
-        \ '%W%f:%l:%v: Suggestion: %m,' .
+        \ '%E%f:%l:%c: Error: %m,' .
+        \ '%W%f:%l:%c: Warning: %m,' .
         \ '%C%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'vcol': 1},
         \ 'postprocess': ['compressWhitespace'] })
 endfunction
 
@@ -38,4 +34,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set sw=4 sts=4 et fdm=marker:
+" vim: set et sts=4 sw=4:
