@@ -33,6 +33,9 @@ let g:syntastic_warning_symbol = '!'
 let g:syntastic_check_on_open = 1
 let g:syntastic_enable_signs = 1
 
+let g:syntastic_puppet_puppetlint_args='--no-80chars-check'
+let g:syntastic_puppet_puppetlint_args='--no-autoloader_layout-check'
+
 " neocomplcache keybindings
 let g:neocomplcache_enable_at_startup = 1
 
